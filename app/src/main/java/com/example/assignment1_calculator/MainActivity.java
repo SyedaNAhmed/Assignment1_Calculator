@@ -21,6 +21,9 @@ public class MainActivity extends AppCompatActivity {
     public List<String> calculator;
 
     Calculator cal = new Calculator();
+    private History calculations;
+
+    private boolean saveCalculations = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 btn7_pushed, btn8_pushed, btn9_pushed, btn0_pushed, add_btn_pushed, sub_btn_pushed, mul_btn_pushed,
                 div_btn_pushed, c_btn_pushed, eql_btn_pushed, next_btn_pushed;
         TextView result_display;
+        TextView hist_display;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -55,8 +59,10 @@ public class MainActivity extends AppCompatActivity {
         eql_btn_pushed = findViewById(R.id.eql_btn);
         next_btn_pushed = findViewById(R.id.next_btn);
         result_display = findViewById(R.id.display);
+        hist_display = findViewById(R.id.HistoryDisplay);
 
         calculator = new ArrayList<>();
+        calculations = new History();
 
         btn1_pushed.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -180,6 +186,18 @@ public class MainActivity extends AppCompatActivity {
 
                 int calculationResult = cal.calculate(result);
                 Log.d("calculator", "Calculation Result: " + calculationResult);
+
+                if (saveCalculations){
+                    calculations.addHistory(result + calculationResult);
+
+                    List<String> calculationHistory = calculations.getCalculationResults();
+                    StringBuilder historyText = new StringBuilder();
+                    for (String history : calculationHistory) {
+                    historyText.append(history).append("\n");
+                    }
+                    hist_display.setText(historyText.toString());
+                }
+
                 calculator.add(Integer.toString(calculationResult));
                 String fullCalculation = String.join("", calculator);
                 result_display.setText(fullCalculation);
@@ -188,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
         next_btn_pushed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                next_btn_pushed.setText("STANDARD - NO HISTORY");
                 Log.d("calculator","Next screen button has been pushed.");
+                saveCalculations = true;
             }
         });
     }
