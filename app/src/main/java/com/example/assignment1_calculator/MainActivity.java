@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     public List<String> calculator;
 
     Calculator cal = new Calculator();
+    private History calculations;
+
+    private boolean saveCalculations = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 btn7_pushed, btn8_pushed, btn9_pushed, btn0_pushed, add_btn_pushed, sub_btn_pushed, mul_btn_pushed,
                 div_btn_pushed, c_btn_pushed, eql_btn_pushed, next_btn_pushed;
         TextView result_display;
+        TextView hist_display;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -55,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
         eql_btn_pushed = findViewById(R.id.eql_btn);
         next_btn_pushed = findViewById(R.id.next_btn);
         result_display = findViewById(R.id.display);
+        hist_display = findViewById(R.id.HistoryDisplay);
 
         calculator = new ArrayList<>();
+        calculations = new History();
 
         btn1_pushed.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -170,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
+
                 calculator.add(eql_btn_pushed.getText().toString());
 
                 String result = String.join("",calculator);
@@ -180,6 +189,18 @@ public class MainActivity extends AppCompatActivity {
 
                 int calculationResult = cal.calculate(result);
                 Log.d("calculator", "Calculation Result: " + calculationResult);
+
+                if (saveCalculations){
+                    calculations.addHistory(result + calculationResult);
+
+                    List<String> calculationHistory = calculations.getCalculationResults();
+                    StringBuilder historyText = new StringBuilder();
+                    for (String history : calculationHistory) {
+                    historyText.append(history).append("\n");
+                    }
+                    hist_display.setText(historyText.toString());
+                }
+
                 calculator.add(Integer.toString(calculationResult));
                 String fullCalculation = String.join("", calculator);
                 result_display.setText(fullCalculation);
@@ -188,9 +209,43 @@ public class MainActivity extends AppCompatActivity {
         next_btn_pushed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("calculator","Next screen button has been pushed.");
+                if (saveCalculations) {
+                    next_btn_pushed.setText("ADVANCE - WITH HISTORY");
+                    calculator.clear();
+                    hist_display.setText("");
+
+                } else {
+                    next_btn_pushed.setText("STANDARD - NO HISTORY");
+                }
+                Log.d("calculator", "Next screen button has been pushed.");
+                saveCalculations = !saveCalculations;
+
+//                next_btn_pushed.setText("STANDARD - NO HISTORY");
+//                Log.d("calculator","Next screen button has been pushed.");
+//                saveCalculations = true;
             }
         });
+    }
+
+    private boolean validate() {
+        if (calculator.isEmpty()) {
+            // If the calculator list is empty, validation fails
+            return false;
+        }
+
+        String firstElement = calculator.get(0);
+
+        // Check if the first element is an operator
+        if (isOperator(firstElement)) {
+            // Show a Toast message indicating that the input is invalid
+            Toast.makeText(MainActivity.this, "Invalid input. Operator cannot be at the beginning.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+    private boolean isOperator(String element) {
+        return "+".equals(element) || "-".equals(element) || "*".equals(element) || "/".equals(element);
     }
 
 }

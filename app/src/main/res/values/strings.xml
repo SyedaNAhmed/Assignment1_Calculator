@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Assignment1</string>
     <string name="display">Display</string>
+    <string name="history_display">History Display</string>
     <string name="next">ADVANCE - WITH HISTORY</string>
+    <string name="history_title">HISTORY</string>
 </resources>
