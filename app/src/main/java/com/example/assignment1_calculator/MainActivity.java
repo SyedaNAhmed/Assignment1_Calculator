@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
         next_btn_pushed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (saveCalculations) {
                     next_btn_pushed.setText("ADVANCE - WITH HISTORY");
                     calculator.clear();
@@ -223,6 +224,11 @@ public class MainActivity extends AppCompatActivity {
 //                next_btn_pushed.setText("STANDARD - NO HISTORY");
 //                Log.d("calculator","Next screen button has been pushed.");
 //                saveCalculations = true;
+
+                next_btn_pushed.setText("STANDARD - NO HISTORY");
+                Log.d("calculator","Next screen button has been pushed.");
+                saveCalculations = true;
+
             }
         });
     }
